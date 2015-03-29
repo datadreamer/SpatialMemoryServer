@@ -1,6 +1,7 @@
 #!/home/asiegel/dev/bin/python
 
 import sys
+import math
 import MySQLdb
 import json
 from PIL import Image
@@ -41,6 +42,17 @@ class SpatialMemory:
 		sys.stdout.write("Content-Type: image/jpeg\r\n\r\n" + output.getvalue())
 		output.close()
 
+	def getDistanceInMeters(self, myLat, myLon, photoLat, photoLon):
+		# calculate distance in meters between photo location and user location
+		R = 6371000		# earths radius in meters
+		myLatRads = math.radians(myLat)
+		photoLatRads = math.radians(photoLat)
+		latDiff = math.radians(photoLat - myLat)
+		lonDiff = math.radians(photoLon - myLon)
+		a = math.sin(latDiff/2) * math.sin(latDiff/2) + math.cos(myLatRads) * math.cos(photoLatRads) * math.sin(lonDiff/2) * math.sin(lonDiff/2)
+		c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+		return R * c
+
 	def listLocalPhotos(self):
 		print "Content-Type: text/plain\n"
 		myLat = cgi.escape(self.form["lat"].value)
@@ -51,7 +63,8 @@ class SpatialMemory:
 		print "["
 		count = 0
 		for r in results:
-			jsonOutput = json.dumps({"id": r[0], "item_id": r[1], "page_id": r[2], "collection_id": r[3], "title": r[4], "lat": r[5], "lon": r[6], "circa": r[7], "dist": r[8]}, sort_keys=True)
+			dist = self.getDistanceInMeters(float(myLat), float(myLon), float(r[5]), float(r[6]))
+			jsonOutput = json.dumps({"id": r[0], "item_id": r[1], "page_id": r[2], "collection_id": r[3], "title": r[4], "lat": r[5], "lon": r[6], "circa": r[7], "dist": str(dist)}, sort_keys=True)
 			count += 1
 			if count < len(results):
 				print jsonOutput +","
