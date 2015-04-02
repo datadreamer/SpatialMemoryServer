@@ -20,6 +20,8 @@ class SpatialMemory:
 			self.listLocalPhotos()
 		elif action == "photo":
 			self.getPhoto()
+		elif action == "info":
+			self.getPhotoInfo()
 
 	def connectToDatabase(self):
 		self.conn = MySQLdb.connect(host="localhost", user="asiegel_web", passwd="buttslol!", db="asiegel_histmap")
@@ -42,6 +44,15 @@ class SpatialMemory:
 		sys.stdout.write("Content-Type: image/jpeg\r\n\r\n" + output.getvalue())
 		output.close()
 
+	def getPhotoInfo(self):
+		# return line with photo information
+		print "Content-Type: text/plain\n"
+		id = cgi.escape(self.form["id"].value)
+		self.c.execute("SELECT * FROM photos WHERE id = "+id)
+		r = self.c.fetchone()
+		jsonOutput = json.dumps({"id": r[0], "item_id": r[1], "page_id": r[2], "collection_id": r[3], "title": r[4], "lat": r[5], "lon": r[6], "circa": r[7]}, sort_keys=True)
+		print jsonOutput
+
 	def getDistanceInMeters(self, myLat, myLon, photoLat, photoLon):
 		# calculate distance in meters between photo location and user location
 		R = 6371000		# earths radius in meters
@@ -54,6 +65,8 @@ class SpatialMemory:
 		return R * c
 
 	def listLocalPhotos(self):
+		# list up to 20 archived photos within the radius
+		# TODO: switch to haversine distance calculation
 		print "Content-Type: text/plain\n"
 		myLat = cgi.escape(self.form["lat"].value)
 		myLon = cgi.escape(self.form["lon"].value)
