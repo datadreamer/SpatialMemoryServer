@@ -1,0 +1,33 @@
+body{
+  margin: 0px;
+  padding: 0px;
+  background-color: #000;
+}
+
+.photo{
+  width: 100%;
+  position: relative;
+}
+
+.photo img{
+  width: 100%;
+  height: auto;
+}
+
+.photo .caption{
+  font-family: "Helvetica", "Arial", sans-serif;
+  font-weight: 700;
+  background-color: rgba(0,0,0,0.5);
+  color: #fff;
+  width: 98%;
+  padding: 1%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.photo .caption .details{
+  margin-left: 2%;
+  font-weight: 400;
+  color: #aaa;
+}

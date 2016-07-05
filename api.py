@@ -30,15 +30,15 @@ class SpatialMemory:
 	def getPhoto(self):
 		# return photo sized to constrain to user's screen dimensions
 		id = cgi.escape(self.form["id"].value)
-		sw = int(cgi.escape(self.form["sw"].value))
-		sh = int(cgi.escape(self.form["sh"].value))
+		#sw = int(cgi.escape(self.form["sw"].value))
+		#sh = int(cgi.escape(self.form["sh"].value))
 		self.c.execute("SELECT collection_id,item_id FROM photos WHERE id = "+id)
 		result = self.c.fetchone()
 		#print str(result[0]) +"/"+ str(result[1]) +".jpg"
 		img = Image.open("photos/"+ str(result[0]) +"/"+ str(result[1]) +".jpg")
-		neww = sw
-		newh = (sw / float(img.size[0])) * img.size[1]
-		img = img.resize((int(neww), int(newh)), Image.BICUBIC)
+		#neww = sw
+		#newh = (sw / float(img.size[0])) * img.size[1]
+		#img = img.resize((int(neww), int(newh)), Image.BICUBIC)
 		output = StringIO.StringIO()
 		img.save(output, "JPEG")
 		sys.stdout.write("Content-Type: image/jpeg\r\n\r\n" + output.getvalue())
@@ -67,7 +67,8 @@ class SpatialMemory:
 	def listLocalPhotos(self):
 		# list up to 20 archived photos within the radius
 		# TODO: switch to haversine distance calculation
-		print "Content-Type: text/plain\n"
+		print "Access-Control-Allow-Origin: *\n"
+		#print "Content-Type: text/plain\n"
 		myLat = cgi.escape(self.form["lat"].value)
 		myLon = cgi.escape(self.form["lon"].value)
 		radius = "0.005"

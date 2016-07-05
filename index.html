@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Spatial Memory</title>
+    <link rel="stylesheet" type="text/css" href="site.css">
+    <script src="jquery-3.0.0.min.js"></script>
+    <!--
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    -->
+  </head>
+
+  <body>
+
+    <script>
+      function listLoaded(data){
+        console.log(data);
+        for(var i=0; i<data.length; i++){
+          addPhoto(data[i]);
+        }
+      }
+
+      function addPhoto(photoData){
+        var newhtml = "<div class='photo'>\n";
+        newhtml += "<img src='http://spatialmemory.com/api.py?action=photo&id="+photoData.id+"'><br/>\n";
+        newhtml += "<div class='caption'>"+photoData.title;
+        newhtml += "<span class='details'>("+photoData.circa +", "+ Math.round(photoData.dist) +" meters away.)</span>\n";
+        newhtml += "</div>\n</div>\n\n";
+        $("body").append(newhtml);
+      }
+
+      if ("geolocation" in navigator) {
+         navigator.geolocation.getCurrentPosition(function (location) {
+           console.log(location.coords.latitude, location.coords.longitude);
+           var lat = location.coords.latitude;
+           var lon = location.coords.longitude;
+           $.getJSON({url:"http://spatialmemory.com/api.py?action=local&lat="+lat+"&lon="+lon, success:listLoaded});
+         });
+      }
+    </script>
+
+  </body>
+
+</html>
